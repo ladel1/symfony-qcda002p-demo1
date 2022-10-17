@@ -21,7 +21,7 @@ class HomeController extends AbstractController {
      * @Route("/contact",name="app_contact")
      */
     function contact():Response{
-        return new Response("<h1>Contact</h1>");
+        return $this->render("pages/contact.html.twig");
     }
 
 
