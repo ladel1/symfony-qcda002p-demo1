@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +19,18 @@ class ArticleController extends AbstractController {
      * @Route("/{id}",name="detail",requirements={"id"="\d+"})
      */
     function detail($id):Response{
-        return new Response("<h1> id = $id</h1>");
+        $repo = $this->getDoctrine()->getRepository(Article::class);
+        return new Response($repo->find($id)->getName());
     } 
+
+
+    /**
+     * @Route("/list",name="list")
+     */
+    function list(ArticleRepository $repo):Response{
+        $articles = $repo->findAll();
+        return $this->render("article/list.html.twig",compact("articles"));
+    }     
 
     /**
      * @Route("/update/{id}",name="update",requirements={"id"="\d+"})
@@ -30,27 +42,24 @@ class ArticleController extends AbstractController {
     /**
      * @Route("/delete/{id}",name="delete",requirements={"id"="\d+"})
      */
-    function delete($id):Response{
-        return new Response("Supprimer un article");
+    function delete(ArticleRepository $repo,$id):Response{
+        $repo->delete($id);
+        return $this->redirectToRoute("app_article_list");
     }
-
+    
     /**
      * @Route("/add",name="add")
      */
-    function add(Request $request):Response{
-
+    function add(Request $request,ArticleRepository $repo):Response{// injection de dependance
+        // verfier la méthode utilisé
         if($request->isMethod("POST")){
             //la création de l'objet
             $article = new Article();
             $article->setName($request->request->get("name"))
                     ->setDescription($request->request->get("description"))
                     ->setPrice($request->request->get("price"));
-    
-            // recup entity manager
-            $em = $this->getDoctrine()->getManager();
             // persister l'objet
-            $em->persist($article);
-            $em->flush();
+            $repo->add($article,true);
         }
         
         return $this->render("article/add.html.twig");

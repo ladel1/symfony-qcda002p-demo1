@@ -39,6 +39,11 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
+    public function delete(int $pk):void{
+        $article = $this->find($pk);
+        $this->remove($article,true);
+    }
+
 //    /**
 //     * @return Article[] Returns an array of Article objects
 //     */
