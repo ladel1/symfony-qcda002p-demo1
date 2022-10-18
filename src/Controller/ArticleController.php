@@ -15,6 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ArticleController extends AbstractController {
 
+    private $em;
+    private $articleRepository;
+
+    function __construct(EntityManagerInterface $em,ArticleRepository $articleRepository)
+    {
+        $this->em=$em;
+        $this->articleRepository=$articleRepository;
+    }
+
+
     /**
      * @Route("/{id}",name="detail",requirements={"id"="\d+"})
      */
@@ -27,30 +37,39 @@ class ArticleController extends AbstractController {
     /**
      * @Route("/list",name="list")
      */
-    function list(ArticleRepository $repo):Response{
-        $articles = $repo->findAll();
+    function list():Response{
+        $articles = $this->articleRepository->findAll();
         return $this->render("article/list.html.twig",compact("articles"));
     }     
 
     /**
      * @Route("/update/{id}",name="update",requirements={"id"="\d+"})
      */
-    function update($id):Response{
-        return new Response("Modifier un article");
+    function update(Article $article,Request $request):Response{
+        // verfier la méthode utilisé
+        if($request->isMethod("POST")){
+            //modifier de l'objet
+            $article->setName($request->request->get("name"))
+                    ->setDescription($request->request->get("description"))
+                    ->setPrice($request->request->get("price"));
+            // updater l'objet
+            $this->em->flush();
+        }        
+        return $this->render("article/update.html.twig",compact("article"));
     }
 
     /**
      * @Route("/delete/{id}",name="delete",requirements={"id"="\d+"})
      */
-    function delete(ArticleRepository $repo,$id):Response{
-        $repo->delete($id);
+    function delete($id):Response{
+        $this->articleRepository->delete($id);
         return $this->redirectToRoute("app_article_list");
     }
     
     /**
      * @Route("/add",name="add")
      */
-    function add(Request $request,ArticleRepository $repo):Response{// injection de dependance
+    function add(Request $request):Response{// injection de dependance
         // verfier la méthode utilisé
         if($request->isMethod("POST")){
             //la création de l'objet
@@ -59,7 +78,8 @@ class ArticleController extends AbstractController {
                     ->setDescription($request->request->get("description"))
                     ->setPrice($request->request->get("price"));
             // persister l'objet
-            $repo->add($article,true);
+            $this->articleRepository->add($article,true);
+            
         }
         
         return $this->render("article/add.html.twig");

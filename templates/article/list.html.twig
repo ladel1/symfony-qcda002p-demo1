@@ -32,8 +32,8 @@
                         <td>{{article.price}}</td>
                         <td>
                             <a class="btn btn-outline-info" href="{{ path('app_article_detail',{id:article.id}) }}"><i class="fa-solid fa-eye"></i></a>
-                            <a class="btn btn-outline-danger" href="{{ path('app_article_delete',{id:article.id}) }}"><i class="fa-solid fa-trash"></i></a>
-                            <a class="btn btn-outline-primary" href=""><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a class="btn btn-outline-danger" onclick="return confirm('Voulez-vous vraiment supprimer cet article ?')" href="{{ path('app_article_delete',{id:article.id}) }}"><i class="fa-solid fa-trash"></i></a>
+                            <a class="btn btn-outline-primary" href="{{ path('app_article_update',{id:article.id}) }}"><i class="fa-solid fa-pen-to-square"></i></a>
                         </td>
                     </tr>
                 {% endfor %}
