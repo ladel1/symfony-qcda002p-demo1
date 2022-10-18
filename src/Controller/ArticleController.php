@@ -24,6 +24,13 @@ class ArticleController extends AbstractController {
         $this->articleRepository=$articleRepository;
     }
 
+    /**
+     * @Route("/search/{name}",name="search")
+     */
+    function search($name){
+        dd($this->articleRepository->search($name));
+    }
+
 
     /**
      * @Route("/{id}",name="detail",requirements={"id"="\d+"})

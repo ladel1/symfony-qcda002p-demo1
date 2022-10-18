@@ -44,6 +44,20 @@ class ArticleRepository extends ServiceEntityRepository
         $this->remove($article,true);
     }
 
+    public function search($keyword){
+        $em = $this->getEntityManager();
+        $dql = "
+                SELECT a FROM App\Entity\Article a
+                WHERE a.name LIKE :name                
+        ";
+        $stmt = $em->createQuery($dql);
+        $stmt->setParameters(
+            array(
+                ":name"=>"%$keyword%"
+            ) );
+        return $stmt->getResult();
+    }
+
 //    /**
 //     * @return Article[] Returns an array of Article objects
 //     */
