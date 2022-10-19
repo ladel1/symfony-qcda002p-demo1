@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,10 +26,13 @@ class ArticleController extends AbstractController {
     }
 
     /**
-     * @Route("/search/{name}",name="search")
+     * @Route("/search",name="search")
      */
-    function search($name){
-        dd($this->articleRepository->search($name));
+    function search(Request $request){
+        //$articles=$this->articleRepository->search($request->query->get("s"));
+        $articles=$this->articleRepository->searchBy($request->query->get("s"));
+        $title = "Recherche";
+        return $this->render("article/list.html.twig",compact("articles","title"));
     }
 
 
@@ -46,7 +50,8 @@ class ArticleController extends AbstractController {
      */
     function list():Response{
         $articles = $this->articleRepository->findAll();
-        return $this->render("article/list.html.twig",compact("articles"));
+        $title = "Acrticles";
+        return $this->render("article/list.html.twig",compact("articles","title"));
     }     
 
     /**
@@ -77,19 +82,23 @@ class ArticleController extends AbstractController {
      * @Route("/add",name="add")
      */
     function add(Request $request):Response{// injection de dependance
-        // verfier la méthode utilisé
-        if($request->isMethod("POST")){
-            //la création de l'objet
-            $article = new Article();
-            $article->setName($request->request->get("name"))
-                    ->setDescription($request->request->get("description"))
-                    ->setPrice($request->request->get("price"));
-            // persister l'objet
+        // creation de l'objet article
+        $article = new Article();
+        // creation du formaulaire
+        $articleForm = $this->createForm(ArticleType::class,$article);
+        // fill article object
+        $articleForm->handleRequest($request);
+
+        if($articleForm->isSubmitted() && $articleForm->isValid() ){
             $this->articleRepository->add($article,true);
-            
+            // sauvgarder le message dans la session
+            $this->addFlash("success","Article a bien été ajouté!");
+            return $this->redirectToRoute("app_article_list");
         }
-        
-        return $this->render("article/add.html.twig");
+
+
+        return $this->render("article/add.html.twig",
+                            ["articleForm"=>$articleForm->createView()]);
     }
 
 }

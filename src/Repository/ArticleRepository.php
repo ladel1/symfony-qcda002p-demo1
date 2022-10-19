@@ -58,6 +58,31 @@ class ArticleRepository extends ServiceEntityRepository
         return $stmt->getResult();
     }
 
+
+    public function searchByDesc($keyword){
+        $qb = $this->createQueryBuilder("a");
+        $qb->andWhere("a.description LIKE :keyword");
+        $query = $qb->getQuery();
+        $query->setParameter(":keyword","%$keyword%");
+        return $query->getResult();
+    }    
+
+    public function searchBy($keyword,$type=0){
+        $qb = $this->createQueryBuilder("a");
+        if($type===0){
+            $qb->andWhere("a.description LIKE :keyword OR a.name LIKE :keyword");
+        }
+        if($type===1){
+            $qb->andWhere("a.name LIKE :keyword");
+        }
+        if($type===2){
+            $qb->andWhere("a.description LIKE :keyword");
+        }                
+        $query = $qb->getQuery();
+        $query->setParameter(":keyword","%$keyword%");
+        return $query->getResult();
+    }      
+
 //    /**
 //     * @return Article[] Returns an array of Article objects
 //     */

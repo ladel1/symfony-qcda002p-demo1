@@ -4,15 +4,23 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
-{% block titre %}Articles{% endblock %}
+{% block titre %}{{title}}{% endblock %}
 
 {% block contenu %}
 
 <div class="row mt-5 text-center">
-    <h2>Articles</h2>        
+    <h2>{{title}}</h2>        
 </div>
+
 <div class="row mt-5">
     <div class="col-6 offset-3">
+        {% for type,messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{type}} ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}        
         <table class="table table-dark">
             <thead>
               <tr>
