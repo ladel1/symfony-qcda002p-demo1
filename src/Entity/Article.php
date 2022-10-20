@@ -21,7 +21,7 @@ class Article
 
     /**
      * @Assert\NotBlank(message="Le champs nom ne peut pas etre vide!")
-     * @Assert\Length(min=3,max=10,
+     * @Assert\Length(min=3,max=255,
      *  minMessage="Trop court",
      *  maxMessage="Trop long"
      * )
@@ -36,8 +36,8 @@ class Article
 
     /**
      * @Assert\Type(
-     * type="integer",
-     * message="seulement des nombres entiers"
+     * type="float",
+     * message="seulement des nombres réels"
      * )
      * @Assert\Range( min=0,max=500,
      * minMessage="min 0€",
@@ -48,10 +48,12 @@ class Article
     private $price;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles")
+     * @Assert\NotBlank(groups={"Registration"})
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $category;
+    private $category; 
+
 
     public function getId(): ?int
     {      

@@ -28,6 +28,7 @@
                 <th scope="col">Nom</th>
                 <th scope="col">Résumé</th>
                 <th scope="col">Prix</th>
+                <th scope="col">Catégorie</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -38,6 +39,7 @@
                         <td>{{article.name}}</td>
                         <td>{{article.description|split(" ")|slice(0,6)|join(" ") }}...</td>
                         <td>{{article.price}}</td>
+                        <td>{{article.category.name}}</td>
                         <td>
                             <a class="btn btn-outline-info" href="{{ path('app_article_detail',{id:article.id}) }}"><i class="fa-solid fa-eye"></i></a>
                             <a class="btn btn-outline-danger" onclick="return confirm('Voulez-vous vraiment supprimer cet article ?')" href="{{ path('app_article_delete',{id:article.id}) }}"><i class="fa-solid fa-trash"></i></a>

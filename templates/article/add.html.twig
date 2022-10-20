@@ -3,6 +3,10 @@
 
 {% block titre %}Ajouter un article{% endblock %}
 
+{% block stylesheet %}
+<link rel="stylesheet" href="{{asset('css/add-article.css')}}">
+{% endblock %}
+
 {% block contenu %}
 
 <div class="row mt-5 text-center">
@@ -13,4 +17,8 @@
         {{ form(articleForm) }}
     </div>
 </div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{{asset('js/add-article.js')}}"></script>
 {% endblock %}

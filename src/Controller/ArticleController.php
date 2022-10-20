@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Category;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -81,17 +82,27 @@ class ArticleController extends AbstractController {
     /**
      * @Route("/add",name="add")
      */
-    function add(Request $request):Response{// injection de dependance
+    function add(Request $request,EntityManagerInterface $em):Response{// injection de dependance
         // creation de l'objet article
         $article = new Article();
         // creation du formaulaire
         $articleForm = $this->createForm(ArticleType::class,$article);
         // fill article object
         $articleForm->handleRequest($request);
-
         if($articleForm->isSubmitted() && $articleForm->isValid() ){
-            $this->articleRepository->add($article,true);
-            // sauvgarder le message dans la session
+            $category_name = $request->request->get("article")["category_name"];
+            if(empty($category_name)){
+                $this->articleRepository->add($article,true);
+            }else{
+                $category = new Category();
+                $category->setName($category_name)
+                         ->setSlug(urlencode($category_name));
+                $article->setCategory($category);
+                $em->persist($category);
+                $em->persist($article);
+                $em->flush();
+            }
+            // // sauvgarder le message dans la session
             $this->addFlash("success","Article a bien été ajouté!");
             return $this->redirectToRoute("app_article_list");
         }
